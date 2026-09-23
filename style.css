@@ -1,0 +1,691 @@
+:root {
+    --bg: #FFF9F5;
+    --card: #FFFFFF;
+    --ink: #4A4441;
+    --ink-soft: #8C8683;
+    --line: #EFE8E1;
+    --p1: #F29B88;
+    --p1-soft: #FDECE9;
+    --p2: #6BA8A0;
+    --p2-soft: #E6F2F0;
+    --ok: #6BA8A0;
+    --alert: #E86F68;
+    --alert-soft: #FCE8E7;
+    --wish: #F2C94C;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Zen Maru Gothic', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 20px 16px 80px;
+}
+
+h1 {
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: 0.02em;
+    margin: 4px 0 2px;
+}
+
+.sub {
+    color: var(--ink-soft);
+    font-size: 13px;
+    margin: 0 0 20px;
+}
+
+/* 豚のアニメーション：コース（トラック） */
+.piggy-track {
+    position: relative;
+    width: 100%;
+    height: 120px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+/* 豚のラッパー（左から右へ移動） */
+.pig-wrapper {
+    position: absolute;
+    bottom: 10px;
+    left: -120px;
+    /* 画面外の左からスタート */
+    /* JSで設定したスピード変数を読み込み */
+    animation: runPig var(--pig-speed, 6s) linear infinite;
+    z-index: 2;
+}
+
+/* 豚の移動アニメーション */
+@keyframes runPig {
+    0% {
+        left: -120px;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+/* 豚自体を少し上下に跳ねさせる（歩いているように見せる） */
+.piggy-svg {
+    overflow: visible;
+    animation: bouncePig 0.3s alternate infinite;
+}
+
+@keyframes bouncePig {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(-4px);
+    }
+}
+
+/* 落ちているコイン */
+.track-coin {
+    position: absolute;
+    top: 45px;
+    width: 24px;
+    height: 24px;
+    background: #FFD54F;
+    border: 2px solid #FFCA28;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #F57F17;
+    font-size: 13px;
+    font-weight: bold;
+    z-index: 1;
+    animation: hideCoin var(--pig-speed, 6s) linear infinite;
+}
+
+/* コインの配置と、豚の通過に合わせてゲット（消える）タイミング */
+.track-coin:nth-child(1) {
+    left: 25%;
+    animation-name: hideCoin1;
+}
+
+.track-coin:nth-child(2) {
+    left: 55%;
+    animation-name: hideCoin2;
+}
+
+.track-coin:nth-child(3) {
+    left: 85%;
+    animation-name: hideCoin3;
+}
+
+/* 豚の鼻が触れるタイミングで少し大きくなってから消えるエフェクト */
+@keyframes hideCoin1 {
+
+    0%,
+    20% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    25% {
+        opacity: 0;
+        transform: scale(1.5);
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes hideCoin2 {
+
+    0%,
+    45% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0;
+        transform: scale(1.5);
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes hideCoin3 {
+
+    0%,
+    70% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    75% {
+        opacity: 0;
+        transform: scale(1.5);
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* ぽっちゃりやガリガリの体型変化 */
+.pig-body,
+.pig-snout,
+.pig-ear,
+.pig-leg,
+.pig-eye {
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.piggy-fat .pig-body {
+    rx: 42px;
+    ry: 38px;
+    fill: #F48FB1;
+}
+
+.piggy-fat .pig-snout {
+    transform: translate(5px, 0);
+}
+
+.piggy-fat .pig-eye {
+    r: 3.5px;
+    fill: #333;
+}
+
+.piggy-fat .pig-mouth {
+    stroke: #D81B60;
+    stroke-width: 2;
+    fill: none;
+    d: path('M 68 62 Q 72 66 76 62');
+    opacity: 1;
+}
+
+.piggy-normal .pig-body {
+    rx: 35px;
+    ry: 30px;
+    fill: #F48FB1;
+}
+
+.piggy-normal .pig-mouth {
+    opacity: 0;
+}
+
+.piggy-skinny .pig-body {
+    rx: 24px;
+    ry: 20px;
+    fill: #E1BEE7;
+}
+
+.piggy-skinny .pig-snout {
+    fill: #CE93D8;
+    transform: translate(-8px, 4px);
+}
+
+.piggy-skinny .pig-ear {
+    fill: #CE93D8;
+    transform: translate(-4px, 8px);
+}
+
+.piggy-skinny .pig-leg {
+    fill: #E1BEE7;
+    transform: translateY(-4px);
+}
+
+.piggy-skinny .pig-eye {
+    cy: 52px;
+    fill: #757575;
+}
+
+.piggy-skinny .pig-mouth {
+    stroke: #757575;
+    stroke-width: 2;
+    fill: none;
+    d: path('M 62 60 Q 65 56 68 60');
+    opacity: 1;
+}
+
+@keyframes dropCoin {
+    0% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    30% {
+        opacity: 1;
+    }
+
+    70% {
+        transform: translateY(30px);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(45px);
+        opacity: 0;
+    }
+}
+
+/* その他UI要素 */
+.names {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.name-chip {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 8px 10px;
+}
+
+.dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex: none;
+}
+
+.name-chip input {
+    border: none;
+    background: none;
+    font-size: 14px;
+    font-weight: 500;
+    width: 100%;
+    color: var(--ink);
+    font-family: inherit;
+}
+
+.name-chip input:focus {
+    outline: none;
+}
+
+.hero {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.hero-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 14px;
+}
+
+.hero-label {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.balance-edit {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.balance-edit span {
+    font-size: 20px;
+    color: var(--ink-soft);
+    font-weight: 700;
+}
+
+.balance-edit input {
+    font-size: 32px;
+    font-weight: 700;
+    border: none;
+    background: none;
+    color: var(--ink);
+    width: 170px;
+    border-bottom: 2px dashed var(--line);
+    padding-bottom: 2px;
+    font-family: inherit;
+}
+
+.balance-edit input:focus {
+    outline: none;
+    border-color: var(--ink);
+}
+
+.status-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.status-ok {
+    background: #E7EFE5;
+    color: var(--ok);
+}
+
+.status-alert {
+    background: var(--alert-soft);
+    color: var(--alert);
+}
+
+.split-bar {
+    display: flex;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 12px;
+}
+
+.split-bar div {
+    height: 100%;
+    transition: width 0.3s;
+}
+
+.section {
+    margin-bottom: 24px;
+}
+
+.section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.section-head h2 {
+    font-weight: 700;
+    font-size: 17px;
+    margin: 0;
+}
+
+.section-head .count {
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-weight: 500;
+}
+
+.item {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+    transition: opacity 0.2s;
+}
+
+.item.done {
+    opacity: 0.6;
+}
+
+.item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.item-name {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.item-top-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.item-amount {
+    font-size: 17px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.share-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+}
+
+.share-row:first-of-type {
+    border-top: none;
+    margin-top: 8px;
+    padding-top: 0;
+}
+
+.share-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tag {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-weight: 700;
+}
+
+.tag.p1 {
+    background: var(--p1-soft);
+    color: var(--p1);
+}
+
+.tag.p2 {
+    background: var(--p2-soft);
+    color: var(--p2);
+}
+
+.share-amount {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-soft);
+}
+
+.done-toggle {
+    font-size: 12px;
+    font-weight: 700;
+    border: 2px solid var(--line);
+    background: none;
+    border-radius: 20px;
+    padding: 4px 12px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    flex: none;
+    transition: all 0.2s;
+}
+
+.done-toggle.checked {
+    background: var(--ok);
+    border-color: var(--ok);
+    color: #fff;
+}
+
+.done-toggle.wish-btn {
+    border-color: var(--wish);
+    color: var(--wish);
+}
+
+.done-toggle.wish-btn.checked {
+    background: var(--wish);
+    color: #fff;
+}
+
+.del-btn {
+    border: none;
+    background: var(--line);
+    border-radius: 50%;
+    color: var(--ink-soft);
+    font-size: 14px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-form {
+    background: var(--card);
+    border: 2px dashed var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 8px;
+}
+
+.add-form.hidden {
+    display: none;
+}
+
+.add-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.add-row input {
+    flex: 1;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.add-row input:focus {
+    outline: none;
+    border-color: var(--ink-soft);
+}
+
+.split-choice {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.split-choice button {
+    flex: 1;
+    padding: 8px 4px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.split-choice button.active {
+    border-color: var(--ink);
+    color: var(--ink);
+    font-weight: 700;
+    background: #fff;
+}
+
+.add-submit {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background: var(--ink);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.add-toggle {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 2px dashed var(--line);
+    background: none;
+    color: var(--ink-soft);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.owed-grid {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.owed-card {
+    flex: 1;
+    border-radius: 12px;
+    padding: 12px 14px;
+}
+
+.owed-card.p1 {
+    background: var(--p1-soft);
+}
+
+.owed-card.p2 {
+    background: var(--p2-soft);
+}
+
+.owed-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+}
+
+.owed-value {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.owed-value.p1 {
+    color: var(--p1);
+}
+
+.owed-value.p2 {
+    color: var(--p2);
+}
+
+.empty {
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 13px;
+    padding: 32px 10px;
+    border: 2px dashed var(--line);
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.save-note {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    margin-top: 24px;
+}
