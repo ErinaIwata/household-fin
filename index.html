@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ふたりの家計</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Sans+JP:wght@400;500;600&display=swap');
+
+        :root {
+            --bg: #F3EFE7;
+            --card: #FBF9F5;
+            --ink: #262220;
+            --ink-soft: #6B6255;
+            --line: #DED5C4;
+            --p1: #8C4A3A;
+            --p1-soft: #F1DFD8;
+            --p2: #2E5C56;
+            --p2-soft: #DCE6E3;
+            --ok: #4B7A54;
+            --alert: #B2453A;
+            --alert-soft: #F4DEDA;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: 'IBM Plex Sans JP', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .wrap {
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 20px 16px 80px;
+        }
+
+        h1 {
+            font-family: 'Fraunces', serif;
+            font-weight: 600;
+            font-size: 26px;
+            letter-spacing: 0.01em;
+            margin: 4px 0 2px;
+        }
+
+        .sub {
+            color: var(--ink-soft);
+            font-size: 13px;
+            margin: 0 0 20px;
+        }
+
+        .names {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .name-chip {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 8px 10px;
+        }
+
+        .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            flex: none;
+        }
+
+        .name-chip input {
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: 500;
+            width: 100%;
+            color: var(--ink);
+            font-family: inherit;
+        }
+
+        .name-chip input:focus {
+            outline: none;
+        }
+
+        .hero {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .hero-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 14px;
+        }
+
+        .hero-label {
+            font-size: 12px;
+            color: var(--ink-soft);
+            margin-bottom: 4px;
+        }
+
+        .hero-value {
+            font-family: 'Fraunces', serif;
+            font-size: 34px;
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .balance-edit {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .balance-edit span {
+            font-size: 20px;
+            color: var(--ink-soft);
+        }
+
+        .balance-edit input {
+            font-family: 'Fraunces', serif;
+            font-size: 34px;
+            font-weight: 600;
+            border: none;
+            background: none;
+            color: var(--ink);
+            width: 170px;
+            border-bottom: 1px dashed var(--line);
+            padding-bottom: 2px;
+        }
+
+        .balance-edit input:focus {
+            outline: none;
+            border-color: var(--ink);
+        }
+
+        .status-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-ok {
+            background: #E7EFE5;
+            color: var(--ok);
+        }
+
+        .status-alert {
+            background: var(--alert-soft);
+            color: var(--alert);
+        }
+
+        .split-bar {
+            display: flex;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .split-bar div {
+            height: 100%;
+        }
+
+        .section {
+            margin-bottom: 22px;
+        }
+
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .section-head h2 {
+            font-family: 'Fraunces', serif;
+            font-weight: 600;
+            font-size: 17px;
+            margin: 0;
+        }
+
+        .section-head .count {
+            font-size: 12px;
+            color: var(--ink-soft);
+        }
+
+        .item {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+        }
+
+        .item.done {
+            opacity: 0.55;
+        }
+
+        .item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .item-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .item-top-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .item-amount {
+            font-family: 'Fraunces', serif;
+            font-size: 17px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .share-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--line);
+        }
+
+        .share-row:first-of-type {
+            border-top: none;
+            margin-top: 10px;
+            padding-top: 0;
+        }
+
+        .share-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tag {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .tag.p1 {
+            background: var(--p1-soft);
+            color: var(--p1);
+        }
+
+        .tag.p2 {
+            background: var(--p2-soft);
+            color: var(--p2);
+        }
+
+        .share-amount {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--ink-soft);
+        }
+
+        .done-toggle {
+            font-size: 12px;
+            border: 1px solid var(--line);
+            background: none;
+            border-radius: 20px;
+            padding: 4px 10px;
+            color: var(--ink-soft);
+            cursor: pointer;
+            flex: none;
+        }
+
+        .done-toggle.checked {
+            background: var(--ok);
+            border-color: var(--ok);
+            color: #fff;
+        }
+
+        .del-btn {
+            border: none;
+            background: none;
+            color: var(--ink-soft);
+            font-size: 16px;
+            cursor: pointer;
+            padding: 2px 6px;
+            line-height: 1;
+            flex: none;
+        }
+
+        .add-form {
+            background: var(--card);
+            border: 1px dashed var(--line);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 6px;
+        }
+
+        .add-form.hidden {
+            display: none;
+        }
+
+        .add-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .add-row input,
+        .add-row select {
+            flex: 1;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 13px;
+            font-family: inherit;
+            background: #fff;
+            color: var(--ink);
+        }
+
+        .add-row input:focus,
+        .add-row select:focus {
+            outline: none;
+            border-color: var(--ink-soft);
+        }
+
+        .split-choice {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .split-choice button {
+            flex: 1;
+            padding: 7px 4px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: #fff;
+            font-size: 12px;
+            color: var(--ink-soft);
+            cursor: pointer;
+        }
+
+        .split-choice button.active {
+            border-color: var(--ink);
+            color: var(--ink);
+            font-weight: 600;
+            background: #fff;
+        }
+
+        .custom-split {
+            display: none;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .custom-split.show {
+            display: flex;
+        }
+
+        .custom-split input {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 7px 8px;
+            font-size: 12px;
+            font-family: inherit;
+        }
+
+        .add-submit {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: var(--ink);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .add-toggle {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px dashed var(--line);
+            background: none;
+            color: var(--ink-soft);
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+
+        .owed-grid {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .owed-card {
+            flex: 1;
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+
+        .owed-card.p1 {
+            background: var(--p1-soft);
+        }
+
+        .owed-card.p2 {
+            background: var(--p2-soft);
+        }
+
+        .owed-label {
+            font-size: 11px;
+            color: var(--ink-soft);
+            margin-bottom: 2px;
+        }
+
+        .owed-value {
+            font-family: 'Fraunces', serif;
+            font-size: 19px;
+            font-weight: 600;
+        }
+
+        .owed-value.p1 {
+            color: var(--p1);
+        }
+
+        .owed-value.p2 {
+            color: var(--p2);
+        }
+
+        .empty {
+            text-align: center;
+            color: var(--ink-soft);
+            font-size: 13px;
+            padding: 24px 10px;
+            border: 1px dashed var(--line);
+            border-radius: 12px;
+        }
+
+        .save-note {
+            text-align: center;
+            font-size: 11px;
+            color: var(--ink-soft);
+            margin-top: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap" id="app"></div>
+
+    <script>
+        let state = {
+            people: { p1: 'わたし', p2: '彼氏' },
+            balance: 0,
+            monthlyItems: [],
+            oneTimeItems: []
+        };
+        let loaded = false;
+        let showAddMonthly = false;
+        let showAddOnetime = false;
+        let draftSplit = { monthly: 'half', onetime: 'half' };
+
+        function yen(n) {
+            const v = Math.round(Number(n) || 0);
+            return (v < 0 ? '-' : '') + '¥' + Math.abs(v).toLocaleString('ja-JP');
+        }
+
+        function shareFor(item) {
+            // returns {s1, s2}
+            const amt = Number(item.amount) || 0;
+            if (item.splitMode === 'p1') return { s1: amt, s2: 0 };
+            if (item.splitMode === 'p2') return { s1: 0, s2: amt };
+            if (item.splitMode === 'custom') {
+                const s1 = Math.round(amt * (Number(item.customPct) || 50) / 100);
+                return { s1, s2: amt - s1 };
+            }
+            const s1 = Math.round(amt / 2);
+            return { s1, s2: amt - s1 };
+        }
+
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbxazVaqBGaAZQjBt5Y0sXEC_KYWiojJ6qZ-FJ8oXslX23yowLQlNELERqitm-xdDgxD/exec';
+
+        async function save() {
+            try {
+                await fetch(GAS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(state)
+                });
+            } catch (e) { console.error('save failed', e); }
+        }
+
+        async function load() {
+            try {
+                const res = await fetch(GAS_URL);
+                const text = await res.text();
+                const parsed = JSON.parse(text);
+                if (parsed && typeof parsed === 'object' && Object.keys(parsed).length) {
+                    state = Object.assign(state, parsed);
+                }
+            } catch (e) { /* まだデータがない、または通信エラー */ }
+            loaded = true;
+            render();
+        }
+
+        function addItem(kind, name, amount, splitMode, customPct) {
+            const item = {
+                id: 'i' + Date.now() + Math.random().toString(16).slice(2),
+                name, amount: Number(amount) || 0,
+                splitMode: splitMode || 'half',
+                customPct: customPct != null ? Number(customPct) : 50,
+                doneP1: false,
+                doneP2: false
+            };
+            if (kind === 'monthly') state.monthlyItems.push(item);
+            else state.oneTimeItems.push(item);
+            save(); render();
+        }
+
+        function toggleDone(kind, id, who) {
+            const list = kind === 'monthly' ? state.monthlyItems : state.oneTimeItems;
+            const it = list.find(x => x.id === id);
+            if (it) it[who === 'p1' ? 'doneP1' : 'doneP2'] = !it[who === 'p1' ? 'doneP1' : 'doneP2'];
+            save(); render();
+        }
+
+        function removeItem(kind, id) {
+            if (kind === 'monthly') state.monthlyItems = state.monthlyItems.filter(x => x.id !== id);
+            else state.oneTimeItems = state.oneTimeItems.filter(x => x.id !== id);
+            save(); render();
+        }
+
+        function setBalance(v) {
+            state.balance = Number(v) || 0;
+            save();
+        }
+
+        function setName(who, v) {
+            state.people[who] = v || (who === 'p1' ? 'わたし' : '彼氏');
+            save(); render();
+        }
+
+        function unpaidShares(it) {
+            // returns the portion of each person's share that is still not marked as handled
+            const { s1, s2 } = shareFor(it);
+            return {
+                u1: (s1 > 0 && !it.doneP1) ? s1 : 0,
+                u2: (s2 > 0 && !it.doneP2) ? s2 : 0
+            };
+        }
+
+        function computeTotals() {
+            const allMonthly = state.monthlyItems.reduce((sum, it) => sum + (Number(it.amount) || 0), 0);
+            const unpaidOnetime = state.oneTimeItems.reduce((sum, it) => {
+                const { u1, u2 } = unpaidShares(it);
+                return sum + u1 + u2;
+            }, 0);
+            const totalDue = allMonthly + unpaidOnetime;
+            const diff = state.balance - totalDue;
+
+            let s1total = 0, s2total = 0;
+            [...state.monthlyItems, ...state.oneTimeItems].forEach(it => {
+                const { u1, u2 } = unpaidShares(it);
+                s1total += u1; s2total += u2;
+            });
+            return { allMonthly, unpaidOnetime, totalDue, diff, s1total, s2total };
+        }
+
+        function shareRow(kind, it, who, amount) {
+            const doneKey = who === 'p1' ? 'doneP1' : 'doneP2';
+            const isDone = !!it[doneKey];
+            return `
+  <div class="share-row">
+    <div class="share-left">
+      <span class="tag ${who}">${state.people[who]}</span>
+      <span class="share-amount">${yen(amount)}</span>
+    </div>
+    <button class="done-toggle ${isDone ? 'checked' : ''}" onclick="toggleDone('${kind}','${it.id}','${who}')">${isDone ? '対応済み' : '未対応'}</button>
+  </div>`;
+        }
+
+        function itemRow(kind, it) {
+            const { s1, s2 } = shareFor(it);
+            const fullyDone = (s1 === 0 || it.doneP1) && (s2 === 0 || it.doneP2);
+            const rows = [];
+            if (s1 > 0) rows.push(shareRow(kind, it, 'p1', s1));
+            if (s2 > 0) rows.push(shareRow(kind, it, 'p2', s2));
+            return `
+  <div class="item ${fullyDone ? 'done' : ''}">
+    <div class="item-top">
+      <div class="item-name">${it.name}</div>
+      <div class="item-top-right">
+        <div class="item-amount">${yen(it.amount)}</div>
+        <button class="del-btn" onclick="removeItem('${kind}','${it.id}')" title="削除">×</button>
+      </div>
+    </div>
+    ${rows.join('')}
+  </div>`;
+        }
+
+        function addForm(kind) {
+            const open = kind === 'monthly' ? showAddMonthly : showAddOnetime;
+            const split = draftSplit[kind];
+            return `
+  <button class="add-toggle" onclick="toggleAddForm('${kind}')">${open ? '閉じる' : '+ 項目を追加'}</button>
+  <div class="add-form ${open ? '' : 'hidden'}" id="form-${kind}">
+    <div class="add-row">
+      <input type="text" id="name-${kind}" placeholder="${kind === 'monthly' ? '例）家賃、電気代' : '例）冷蔵庫、カーテン'}">
+    </div>
+    <div class="add-row">
+      <input type="number" id="amount-${kind}" placeholder="金額（円）">
+    </div>
+    <div class="split-choice">
+      <button class="${split === 'half' ? 'active' : ''}" onclick="setDraftSplit('${kind}','half')">折半</button>
+      <button class="${split === 'p1' ? 'active' : ''}" onclick="setDraftSplit('${kind}','p1')">${state.people.p1}が全額</button>
+      <button class="${split === 'p2' ? 'active' : ''}" onclick="setDraftSplit('${kind}','p2')">${state.people.p2}が全額</button>
+      <button class="${split === 'custom' ? 'active' : ''}" onclick="setDraftSplit('${kind}','custom')">カスタム</button>
+    </div>
+    <div class="custom-split ${split === 'custom' ? 'show' : ''}">
+      <input type="number" id="pct-${kind}" placeholder="${state.people.p1}の負担割合（%）" value="50">
+    </div>
+    <button class="add-submit" onclick="submitAdd('${kind}')">追加する</button>
+  </div>`;
+        }
+
+        function toggleAddForm(kind) {
+            if (kind === 'monthly') showAddMonthly = !showAddMonthly;
+            else showAddOnetime = !showAddOnetime;
+            render();
+        }
+        function setDraftSplit(kind, mode) {
+            draftSplit[kind] = mode;
+            render();
+            const f = document.getElementById('form-' + kind);
+            if (f) f.scrollIntoView({ block: 'nearest' });
+        }
+        function submitAdd(kind) {
+            const name = document.getElementById('name-' + kind).value.trim();
+            const amount = document.getElementById('amount-' + kind).value;
+            const mode = draftSplit[kind];
+            const pctEl = document.getElementById('pct-' + kind);
+            const pct = pctEl ? pctEl.value : 50;
+            if (!name || !amount) return;
+            addItem(kind, name, amount, mode, pct);
+            if (kind === 'monthly') showAddMonthly = false; else showAddOnetime = false;
+        }
+
+        function render() {
+            const app = document.getElementById('app');
+            if (!loaded) { app.innerHTML = '<div class="sub" style="padding-top:40px;text-align:center;">読み込み中…</div>'; return; }
+
+            const t = computeTotals();
+            const total = Math.max(t.s1total + t.s2total, 1);
+            const p1pct = Math.round(t.s1total / total * 100);
+
+            app.innerHTML = `
+    <h1>ふたりの家計</h1>
+    <p class="sub">共同口座の残高と、毎月の支払い・引越し費用をまとめて管理します。</p>
+
+    <div class="names">
+      <div class="name-chip"><span class="dot" style="background:var(--p1)"></span>
+        <input value="${state.people.p1}" oninput="setName('p1', this.value)"></div>
+      <div class="name-chip"><span class="dot" style="background:var(--p2)"></span>
+        <input value="${state.people.p2}" oninput="setName('p2', this.value)"></div>
+    </div>
+
+    <div class="hero">
+      <div class="hero-row">
+        <div>
+          <div class="hero-label">共同口座の残高</div>
+          <div class="balance-edit"><span>¥</span><input type="number" value="${state.balance}" oninput="setBalance(this.value)"></div>
+        </div>
+      </div>
+      <div class="status-line ${t.diff >= 0 ? 'status-ok' : 'status-alert'}">
+        ${t.diff >= 0
+                    ? `今月分＋未対応の引越し費用（${yen(t.totalDue)}）に対して ${yen(t.diff)} の余裕があります`
+                    : `今月分＋未対応の引越し費用（${yen(t.totalDue)}）に対して ${yen(Math.abs(t.diff))} 不足しています`}
+      </div>
+      <div class="split-bar">
+        <div style="width:${p1pct}%;background:var(--p1)"></div>
+        <div style="width:${100 - p1pct}%;background:var(--p2)"></div>
+      </div>
+      <div class="owed-grid">
+        <div class="owed-card p1">
+          <div class="owed-label">${state.people.p1}の負担分</div>
+          <div class="owed-value p1">${yen(t.s1total)}</div>
+        </div>
+        <div class="owed-card p2">
+          <div class="owed-label">${state.people.p2}の負担分</div>
+          <div class="owed-value p2">${yen(t.s2total)}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <h2>毎月の支払い</h2>
+        <span class="count">合計 ${yen(t.allMonthly)}</span>
+      </div>
+      ${state.monthlyItems.length ? state.monthlyItems.map(it => itemRow('monthly', it)).join('') : '<div class="empty">家賃や光熱費などを登録しましょう</div>'}
+      ${addForm('monthly')}
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <h2>引越し・家具家電の支払い</h2>
+        <span class="count">未対応 ${yen(t.unpaidOnetime)}</span>
+      </div>
+      ${state.oneTimeItems.length ? state.oneTimeItems.map(it => itemRow('onetime', it)).join('') : '<div class="empty">購入予定の家具・家電を登録しましょう</div>'}
+      ${addForm('onetime')}
+    </div>
+
+    <p class="save-note">入力内容はGoogleスプレッドシートに自動保存されます。このページを二人で開けば内容を共有できます。</p>
+  `;
+        }
+
+        window.addEventListener('DOMContentLoaded', load);
+    </script>
+</body>
+
+</html>
